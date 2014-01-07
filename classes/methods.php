@@ -314,16 +314,39 @@ function realizarMovAliados($id){
 		cambiarProvinciaAliado($row["id"],$row["prov_destino"]);
 	}
 }
-function cambiarDestinoEvento($provincia,$aleatorio,$turno,$comprobar){
-	if($comprobar==0){
-		$sql = "UPDATE mov_mar_orden SET prov_evento = '".$aleatorio."' WHERE prov_origen = '".$provincia."' and id_orden IN (SELECT id from ordenes where turno = '".$turno."')";
-	}elseif($comprobar==1){
-		$sql = "UPDATE mov_mar_orden SET prov_evento = '".$aleatorio."' WHERE prov_origen = '".$provincia."' and prov_destino < 76 and id_orden IN (SELECT id from ordenes where turno = '".$turno."')";
-	}else{
-		$sql = "UPDATE mov_mar_orden SET prov_evento = mov_extra WHERE prov_origen = '".$provincia."' and id_orden IN (SELECT id from ordenes where turno = '".$turno."')";
-	}
-			mysql_query($sql);
+//ESTA ESTA MAL, EL DESTINO SE TENDRA QUE CAMBIAR DE VERDAD. 
+/**
+ * Los casos en los que tengo que hacer una modificacion de destino de provincia son:
+ * 
+ * evento 3: elq ue desembarca aleatoriamente
+ * evento 4: el que vuelve a la provincia anterior
+ * evento 6: no se puede desembarcar! (este es el unico con mamoneo porque hay que mover de una provincia de tierra a una provincia de mar y que no se vea afectado por el evento de tierra
+ * ademas que tendríamos que borrar cualquier batalla que se de! ( o generar las batallas post aleatorios mas bien...)
+ * 
+ * 
+ * hay que buscar la provincia dodne se da el evento, y revisar las mov_mar_orden en busca de esa provincia.
+ * 
+ * Una vez la tengamos deberiamos actuar segun el evento.
+ */
+ 
+ 
+function cambiarDestinoEvento($provincia,$jugador,$turno){
+	//primero tenemos que sacar todas las id_orden del turno
+	
+	$sql = "SELECT id_orden from ordenes where turno = '".$turno."'";
+	$result = mysql_query($sql);
+	while ($row = mysql_fetch_array($result)){
+		//Ahora recorremos esas id_orden en busca de prov_origen y los puntos que se han movido, para hacer un rollback de ellos
+		$sql = "SELECT puntos,prov_destino FROM mov_mar_orden where id_orden = '".$row["id_orden"]."' and prov_origen = '".$provincia."' ";
+		$result2 = mysql_query($sql);
+		//	CambiarPuntosProvincia($propietario,$puntos_jugador,1,$total[$prov_azar]); //restamos puntos en origen
 
+		CambiarPuntosProvincia($jugador,mysql_result($result2,0),1,mysql_result($result2,1));  //restamos puntos en destino original
+		CambiarPuntosProvincia($jugador,mysql_result($result2,0),0,$provincia);   //sumamos puntos en origen original
+		
+	}
+	
+	
 }
 
 /***************************FIN FUNCIONES ORDENES********************************/
@@ -357,7 +380,7 @@ function getCampamentoProvincia($provincia){
 	$campamento= mysql_query($sql);
 	return mysql_result($campamento,0);
 }
-function getProvinciasMaritimasJugador($jugador){
+function getProvinciasMaritimasJugador($jugador){ 
 	$provincias = Array();
 	$sql = "SELECT provincia from puntos_por_provincia where jugador = '".$jugador."' and provincia > 75 and puntos > 0";
 	$result = mysql_query($sql);

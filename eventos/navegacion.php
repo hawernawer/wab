@@ -61,14 +61,14 @@ for($propietario=1;$propietario<3;$propietario++){
  * 
  * */
 
-function eventoTemporalDestructor($provincia){
+function eventoTemporalDestructor($provincia,$jugador){
 	global $turno;
 	$conexiones = getProvinciasCosteras($provincias);
 	$length = count($conexiones);
 	$aleatorio = rand(1,$length);
-	
+
 	//el parametro 0 es que no hay que hacer comprobaciones antes de cambiar destino
-	cambiarDestinoEvento($provincia,$aleatorio,$turno,0);
+	cambiarDestinoEvento($provincia,$jugador,$turno);
 	//aqui se cambia el destino del evento en la orden
 	//eso si, los heroes y aliados continuan su movimiento (al menos por ahora)
 	
@@ -77,10 +77,10 @@ function eventoTemporalDestructor($provincia){
 	actualizarEventoProvincia($provincia,TIPOE,3,$turno,$turno);
 	
 }	
-function eventoRegresamosaCasa($provincia){
+function eventoRegresamosaCasa($provincia,$jugador){
 	global $turno;
 	//el parametro 0 es que no hay que hacer comprobaciones antes de cambiar destino
-	cambiarDestinoEvento($provincia,$provincia,$turno,0);
+	cambiarDestinoEvento($provincia,$jugador,$turno);
 	actualizarEventoProvincia($provincia,TIPOE,4,$turno,$turno);
 
 }
@@ -89,16 +89,17 @@ function eventoPiratas($provincia){
 	actualizarPuntosProvinciaPorcentaje($provincia,0.85);
 	actualizarEventoProvincia($provincia,TIPOE,5,$turno,$turno);
 }
-function eventoMareaBaja($provincia){
+function eventoMareaBaja($provincia,$jugador){
 	global $turno;
 	//el parametro 1 es para comprobar que
 	//el destino solo se bloquea si es una provincia inferior a la 76
-	cambiarDestinoEvento($provincia,$provincia,$turno,1);
+	cambiarDestinoEvento($provincia,$jugador,$turno);
 	actualizarEventoProvincia($provincia,TIPOE,6,$turno,$turno);
 }
-function eventoVientosaFavor($provincia){
+function eventoVientosaFavor($provincia,$jugador){
 	global $turno;
 	//el parametro 2 es para indicar que se realiza el movimiento que esté en mov_extra
+	//ESTA HAY QUE VER SI HACEMOS CAMBIAR DESTINO EVENTO U OTRA FUNCION NUEVA
 	cambiarDestinoEvento($provincia,$provincia,$turno,2);
 	actualizarEventoProvincia($provincia,TIPOE,15,$turno,$turno);
 
