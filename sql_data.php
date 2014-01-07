@@ -1,7 +1,7 @@
 <?
-		$dbhost='mysql3.000webhost.com';
-		$dbuser='a9284159_wabdev';
+		$dbhost='mysql.hostinger.es';
+		$dbuser='u273414799_wabu';
 		$dbpass='c0cac0la';
 		$bd=mysql_connect($dbhost,$dbuser,$dbpass) or die;
-		mysql_select_db("a9284159_wabdev",$bd);
+		mysql_select_db("u273414799_wab",$bd);
 ?>
