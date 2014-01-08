@@ -224,6 +224,11 @@ function imprimirValuesSelectImperio(){
 }
 /***************************FIN FUNCIONES IMPERIO********************************/
 /***************************FUNCIONES ORDENES************************************/
+function getLastIdOrden(){
+	$sql = "SELECT max(id_orden) from ordenes";
+	$orden = mysql_query($sql);
+	return mysql_result($orden,0);
+}
 function realizarDesembarcos(){
 	$turno = getLastTurno();
 	$sql = "SELECT * from mov_mar_orden WHERE turno = '".$turno."' and realizado = 0";

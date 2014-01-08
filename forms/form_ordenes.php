@@ -17,7 +17,8 @@ $orden->insertBD();
 //mov heroes 3
 //l mov del lider es un heroe, nos saltamos a la hora de guardar el dato
 //las provincias intermedias
-  //creamos 4 arrays y 4 banderas para guardar las ordenes.
+ //creamos 4 arrays y 4 banderas para guardar las ordenes.
+ 
 $tierra = new Array();
 $tierra_flag= false;
 $mar = new Array();
@@ -26,26 +27,28 @@ $aliados = new Array();
 $aliados_flag = false;
 $heroes = new Array();
 $heroes_flag = false;
+$orden = getLastIdOrden();
 for($i=0;$i++;$i<=$_POST["contador"]){
 	switch($_POST["tipo".$i.""]){
-		case(0): //orden de tierra
-				$tierra[] = new mov_terr_orden($_POST["id_orden".$i""],$_POST["prov_origen".$i""],$_POST["prov_destino".$i""],$_POST["puntos".$i""],$_POST["campamento".$i""],$_POST["batalla".$i""],$_POST["partisanos".$i""]);
+			$orden++;
+		case(0): //orden de tierra				
+				$tierra[] = new mov_terr_orden($orden,$_POST["prov_origen".$i""],$_POST["prov_destino".$i""],$_POST["puntos".$i""],$_POST["campamento".$i""],$_POST["batalla".$i""],$_POST["partisanos".$i""]);
 				$tierra_flag = true;
 		break;
 		case(1): //orden de mar
-				$mar[]= new mov_mar_orden($_POST["id_orden".$i""],$_POST["prov_origen".$i""],$_POST["prov_destino".$i""],$_POST["puntos".$i""],$_POST["prov_extra".$i""],0):
+				$mar[]= new mov_mar_orden($orden,$_POST["prov_origen".$i""],$_POST["prov_destino".$i""],$_POST["puntos".$i""],$_POST["prov_extra".$i""],0):
 				$mar_flag = true;
 		break;
 		case(2): //orden de aliados
-				$aliados[] = new mov_aliados_orden($_POST["id_orden".$i""],$_POST["prov_origen".$i""],$_POST["prov_destino".$i""],$_POST["nombre".$i""]);
+				$aliados[] = new mov_aliados_orden($orden,$_POST["prov_origen".$i""],$_POST["prov_destino".$i""],$_POST["nombre".$i""]);
 				$aliados_flag = true;
 		break;
 		case(3): //orden de heroes
-				$heroes[] = new mov_heroes_orden($_POST["id_orden".$i""],$_POST["prov_origen".$i""],$_POST["prov_destino".$i""],$_POST["puntos".$i""],$_POST["nombre".$i""]);
+				$heroes[] = new mov_heroes_orden($orden,$_POST["prov_origen".$i""],$_POST["prov_destino".$i""],$_POST["puntos".$i""],$_POST["nombre".$i""]);
 				$heroes_flag = true;
 		break;
 		case(4)://orden de heroes(lider)
-				$heroes[] = new mov_heroes_orden($_POST["id_orden".$i""],$_POST["prov_origen".$i""],$_POST["prov_destino".$i""],$_POST["puntos".$i""],$_POST["nombre".$i""]);
+				$heroes[] = new mov_heroes_orden($orden,$_POST["prov_origen".$i""],$_POST["prov_destino".$i""],$_POST["puntos".$i""],$_POST["nombre".$i""]);
 				$heroes_flag = true;
 		default:
 			echo "ERROR TIPO DE ORDEN INCORRECTO";
