@@ -308,16 +308,13 @@ function realizarMovMaritimos($id,$jugador,$desembarco){
 	$tmp_puntos_origen = 0;
 	$tmp_puntos_destino = 0;
 	while ($row = mysql_fetch_array($result)){
-		//aqui tenemos q comprobar q prov destino es >75, metemos un argumento comprobador a la funcion
-		//ese argumento hace que miremos si esta realizdao o no.
-		//si prov ves <76 entonces no hacemos el movimiento.
-		if($row["prov_destino"]>75 and $desembarco == 0){
+			if($row["prov_destino"]>75 and $desembarco == 0){
 			//marcamos la orden como realizada
 			$sql = "UPDATE mov_mar_orden set realizado = 1 where id_orden= '".$row["id_orden"]."' AND prov_origen = '".$row["prov_origen"]."' AND prov_destino = '".$row["destino"]."'";
 			mysql_query($sql);
 			CambiarPuntosProvincia($jugador,$row["puntos"],1,$row["prov_origen"]); //restamos puntos en origen
 			CambiarPuntosProvincia($jugador,$row["puntos"],0,$row["prov_destino"]); //sumamos puntos en destino
-		}elseif($comprobador = 1){
+		}elseif($desembarco = 1){
 			$sql = "UPDATE mov_mar_orden set realizado = 1 where id_orden= '".$row["id_orden"]."' AND prov_origen = '".$row["prov_origen"]."' AND prov_destino = '".$row["destino"]."'";
 			mysql_query($sql);
 			CambiarPuntosProvincia($jugador,$row["puntos"],1,$row["prov_origen"]); //restamos puntos en origen
@@ -334,17 +331,10 @@ function realizarMovHeroes($id,$desembarco){
 	$result = mysql_query($sql);
 	while ($row = mysql_fetch_array($result)){
 		if(($row["prov_origen"]>75&&$row["prov_destino"]<76) && $desembarco == 0){
-			//si la provincia origen es maritima, y la provincia destino es tierra y desembarco es negativo
 			//no se hace
 		}elseif($desembarco == 1 || $row["prov_origen"<76 || $row["prov_destino"]>75){
-			//si la provincia origen es de tierra
-			//o si la provincia final es de mar
-			//o si estan permitidos los desembarcos
-			//se hace
-					cambiarProvinciaHeroe($row["id"],$row["prov_destino"]);
-					$sql = "UPDATE mov_heroes_orden set realizado = 1 where id_orden= '".$row["id_orden"]."' AND prov_origen = '".$row["prov_origen"]."' AND prov_destino = '".$row["destino"]."'";
-
-			
+			cambiarProvinciaHeroe($row["id"],$row["prov_destino"]);
+			$sql = "UPDATE mov_heroes_orden set realizado = 1 where id_orden= '".$row["id_orden"]."' AND prov_origen = '".$row["prov_origen"]."' AND prov_destino = '".$row["destino"]."'";
 		}
 	}
 }
@@ -353,13 +343,8 @@ function realizarMovAliados($id,$desembarco){
 	$result = mysql_query($sql);
 	while ($row = mysql_fetch_array($result)){
 		if(($row["prov_origen"]>75&&$row["prov_destino"]<76) && $desembarco == 0){
-			//si la provincia origen es maritima, y la provincia destino es tierra y desembarco es negativo
 			//no se hace
 		}elseif($desembarco == 1 || $row["prov_origen"<76 || $row["prov_destino"]>75){
-			//si la provincia origen es de tierra
-			//o si la provincia final es de mar
-			//o si estan permitidos los desembarcos
-			//se hace
 				cambiarProvinciaAliado($row["id"],$row["prov_destino"]);
 				$sql = "UPDATE mov_aliados_orden set realizado = 1 where id_orden= '".$row["id_orden"]."' AND prov_origen = '".$row["prov_origen"]."' AND prov_destino = '".$row["destino"]."'";
 		}	
