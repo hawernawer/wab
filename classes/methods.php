@@ -90,11 +90,7 @@ function getPuntosporProvinciaEspecificaBD($Provincia){
 			}
 	}
 		return $global_puntos[$Provincia];
-	
-	/*foreach ( $global_puntos as $puntos_por){
-		//echo "<br>Provincia: ".$puntos_por->getProvincia()." Puntos: <br>".print_r($puntos_por->getPuntos_por_jugador());
-		echo "<br>Provincia: ".$puntos_por->getProvincia();
-	}*/
+
 	}
 	
 function getPropietarioProvincia($provincia){
@@ -228,9 +224,19 @@ function imprimirValuesSelectImperio(){
 }
 /***************************FIN FUNCIONES IMPERIO********************************/
 /***************************FUNCIONES ORDENES************************************/
+function realizarDesembarcos(){
+	$turno = getLastTurno();
+	$sql = "SELECT * from mov_mar_orden WHERE turno = '".$turno."' and realizado = 0";
+	$result = mysql_query($sql);
+
+while($row=mysql_fetch_array($result)){
+	realizarMovMaritimos($row["id"],$row["propietario"],1);
+
+}
+}
 function realizarMovimientos($id,$jugador){
-	realizarMovMaritimos($id,$jugador);
 	realizarMovTerrestres($id,$jugador);
+	realizarMovMaritimos($id,$jugador,0);
 	realizarMovHeroes($id);
 	realizarMovAliados($id);
 }
@@ -273,32 +279,34 @@ function realizarMovTerrestres($id,$jugador){
 
 	}
 }
-// COMPROBAR SI PROV_EVENTO ES DIFERENTE DE CERO
-function realizarMovMaritimos($id,$jugador){
-	//es más complicado que esto
-	//si la provincia destino es de tierra es un DESEMBARQUE
-	//estos están prohíbidos hasta que se terminen los aleatorios maritimos, a ver si se pueden realizar
-	//tambien hay que añadirlos a la lista de "movimientos pendientes_maritimos" 
-	/*
-	 * id_orden
-	 * id_orden_maritima
-	 * prov_origen
-	 * prov_destino
-	 * puntos
-	 * realizado 0 no 1 si
+function realizarMovMaritimos($id,$jugador,$desembarco){
+	/* desembarco = 0 NO se puede desembarcar
+	 * desembarco = 1 SI se puede desembarcar
 	 * 
 	 * */
-	$sql = "SELECT * from mov_mar_orden where id_orden ='".$id."'";
+	$sql = "SELECT * from mov_mar_orden where id_orden ='".$id."' where realizado = 0";
 	$result = mysql_query($sql);
 	$tmp_puntos_origen = 0;
 	$tmp_puntos_destino = 0;
 	while ($row = mysql_fetch_array($result)){
-	
-		CambiarPuntosProvincia($jugador,$row["puntos"],1,$row["prov_origen"]); //restamos puntos en origen
-		CambiarPuntosProvincia($jugador,$row["puntos"],0,$row["prov_destino"]); //sumamos puntos en destino
-	
+		//aqui tenemos q comprobar q prov destino es >75, metemos un argumento comprobador a la funcion
+		//ese argumento hace que miremos si esta realizdao o no.
+		//si prov ves <76 entonces no hacemos el movimiento.
+		if($row["prov_destino"]>75 and $desembarco == 0){
+			//marcamos la orden como realizada
+			$sql = "UPDATE mov_mar_orden set realizado = 1 where id_orden= '".$row["id_orden"]."' AND prov_origen = '".$row["prov_origen"]."' AND prov_destino = '".$row["destino"]."'";
+			mysql_query($sql);
+			CambiarPuntosProvincia($jugador,$row["puntos"],1,$row["prov_origen"]); //restamos puntos en origen
+			CambiarPuntosProvincia($jugador,$row["puntos"],0,$row["prov_destino"]); //sumamos puntos en destino
+		}elseif($comprobador = 1){
+			$sql = "UPDATE mov_mar_orden set realizado = 1 where id_orden= '".$row["id_orden"]."' AND prov_origen = '".$row["prov_origen"]."' AND prov_destino = '".$row["destino"]."'";
+			mysql_query($sql);
+			CambiarPuntosProvincia($jugador,$row["puntos"],1,$row["prov_origen"]); //restamos puntos en origen
+			CambiarPuntosProvincia($jugador,$row["puntos"],0,$row["prov_destino"]); //sumamos puntos en destino		
+		}
 	}
 }
+
 function realizarMovHeroes($id){
 	
 	$sql = "SELECT * from mov_heroes_orden where id_orden ='".$id."'";

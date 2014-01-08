@@ -33,7 +33,7 @@ for($i=0;$i++;$i<=$_POST["contador"]){
 				$tierra_flag = true;
 		break;
 		case(1): //orden de mar
-				$mar[]= new mov_mar_orden($_POST["id_orden".$i""],$_POST["prov_origen".$i""],$_POST["prov_destino".$i""],$_POST["puntos".$i""],$_POST["prov_extra".$i""]):
+				$mar[]= new mov_mar_orden($_POST["id_orden".$i""],$_POST["prov_origen".$i""],$_POST["prov_destino".$i""],$_POST["puntos".$i""],$_POST["prov_extra".$i""],0):
 				$mar_flag = true;
 		break;
 		case(2): //orden de aliados

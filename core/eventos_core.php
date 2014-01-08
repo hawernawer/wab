@@ -10,6 +10,7 @@ include '../classes/methods.php';
  * 1.- movimiento terrestre
  * 2.- movimiento maritimo
  * 3.- aleatorios de navegacion
+ * 3.5 - lanzar movimientos de navegacion restantes
  * 4.- aleatorios generales
  * 5.- aleatorios poblacion
  * 6.- aleatorios capitales
@@ -20,6 +21,7 @@ include '../classes/methods.php';
  * */
  
 lanzarEventosNavegacion();
+realizarDesembarcos();
 lanzarEventosAleatorios();
 lanzarEventosPoblacion();
 lanzarEventosCapitales();
