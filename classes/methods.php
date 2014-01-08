@@ -231,19 +231,33 @@ function getLastIdOrden(){
 }
 function realizarDesembarcos(){
 	$turno = getLastTurno();
+	//hacemos maritimos
 	$sql = "SELECT * from mov_mar_orden WHERE turno = '".$turno."' and realizado = 0";
 	$result = mysql_query($sql);
 
-while($row=mysql_fetch_array($result)){
-	realizarMovMaritimos($row["id"],$row["propietario"],1);
+	while($row=mysql_fetch_array($result)){
+		realizarMovMaritimos($row["id"],$row["propietario"],1);
+	}
+	//ahora de heroes
+	$sql = "SELECT * from mov_heroes_orden WHERE turno = '".$turno."' and realizado = 0";
+	$result = mysql_query($sql);
 
-}
+	while($row=mysql_fetch_array($result)){
+		realizarMovHeroes($row["id"],$row["propietario"],1);
+	}
+	//ahora de aliados
+	$sql = "SELECT * from mov_aliados_orden WHERE turno = '".$turno."' and realizado = 0";
+	$result = mysql_query($sql);
+
+	while($row=mysql_fetch_array($result)){
+		realizarMovAliados($row["id"],$row["propietario"],1);
+	}
 }
 function realizarMovimientos($id,$jugador){
 	realizarMovTerrestres($id,$jugador);
 	realizarMovMaritimos($id,$jugador,0);
-	realizarMovHeroes($id);
-	realizarMovAliados($id);
+	realizarMovHeroes($id,0);
+	realizarMovAliados($id,0);
 }
 //CAMPAMENTO 0 = NO CAMPAMENTO
 //CAMPAMENTO 1 = EVENTUAL
@@ -289,7 +303,7 @@ function realizarMovMaritimos($id,$jugador,$desembarco){
 	 * desembarco = 1 SI se puede desembarcar
 	 * 
 	 * */
-	$sql = "SELECT * from mov_mar_orden where id_orden ='".$id."' where realizado = 0";
+	$sql = "SELECT * from mov_mar_orden where id_orden ='".$id."' and realizado = 0";
 	$result = mysql_query($sql);
 	$tmp_puntos_origen = 0;
 	$tmp_puntos_destino = 0;
@@ -312,19 +326,43 @@ function realizarMovMaritimos($id,$jugador,$desembarco){
 	}
 }
 
-function realizarMovHeroes($id){
-	
-	$sql = "SELECT * from mov_heroes_orden where id_orden ='".$id."'";
+function realizarMovHeroes($id,$desembarco){
+	/*
+	 * desembarco = 0 NO , 1 = SI
+	 * */
+	$sql = "SELECT * from mov_heroes_orden where id_orden ='".$id." and realizado = 0'";
 	$result = mysql_query($sql);
 	while ($row = mysql_fetch_array($result)){
-		cambiarProvinciaHeroe($row["id"],$row["prov_destino"]);
+		if(($row["prov_origen"]>75&&$row["prov_destino"]<76) && $desembarco == 0){
+			//si la provincia origen es maritima, y la provincia destino es tierra y desembarco es negativo
+			//no se hace
+		}elseif($desembarco == 1 || $row["prov_origen"<76 || $row["prov_destino"]>75){
+			//si la provincia origen es de tierra
+			//o si la provincia final es de mar
+			//o si estan permitidos los desembarcos
+			//se hace
+					cambiarProvinciaHeroe($row["id"],$row["prov_destino"]);
+					$sql = "UPDATE mov_heroes_orden set realizado = 1 where id_orden= '".$row["id_orden"]."' AND prov_origen = '".$row["prov_origen"]."' AND prov_destino = '".$row["destino"]."'";
+
+			
+		}
 	}
 }
-function realizarMovAliados($id){
-	$sql = "SELECT * from mov_aliados_orden where id_orden ='".$id."'";
+function realizarMovAliados($id,$desembarco){
+	$sql = "SELECT * from mov_aliados_orden where id_orden ='".$id."' and realizado = 0";
 	$result = mysql_query($sql);
 	while ($row = mysql_fetch_array($result)){
-		cambiarProvinciaAliado($row["id"],$row["prov_destino"]);
+		if(($row["prov_origen"]>75&&$row["prov_destino"]<76) && $desembarco == 0){
+			//si la provincia origen es maritima, y la provincia destino es tierra y desembarco es negativo
+			//no se hace
+		}elseif($desembarco == 1 || $row["prov_origen"<76 || $row["prov_destino"]>75){
+			//si la provincia origen es de tierra
+			//o si la provincia final es de mar
+			//o si estan permitidos los desembarcos
+			//se hace
+				cambiarProvinciaAliado($row["id"],$row["prov_destino"]);
+				$sql = "UPDATE mov_aliados_orden set realizado = 1 where id_orden= '".$row["id_orden"]."' AND prov_origen = '".$row["prov_origen"]."' AND prov_destino = '".$row["destino"]."'";
+		}	
 	}
 }
 //ESTA ESTA MAL, EL DESTINO SE TENDRA QUE CAMBIAR DE VERDAD. 
