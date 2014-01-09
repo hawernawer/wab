@@ -416,6 +416,42 @@ function getCampamentoProvincia($provincia){
 	$campamento= mysql_query($sql);
 	return mysql_result($campamento,0);
 }
+//ESTE METODO HAY QUE PROBARLO PQ NO ME CREO NI YO QUE FURULE XD
+function getPuntosEspecialesProvinciaJugador($jugador){
+	//$key = array_search('green', $array); // $key = 2;
+	$sql = "SELECT coste,provincia from heroes where jugador = '".$jugador."'";
+	$result = mysql_query($sql);
+	$puntos_en_provincia = Array();
+	$provincias_final = Array();
+	while($row=mysql_fetch_array($result){
+		
+		$puntos_en_provincia[][0] = $row["provincia"];
+		$puntos_en_provincia[][1] = $row["coste"];
+	}
+	$sql = "SELECT coste,provincia from aliados where jugador = '".$jugador."'";
+	$result = mysql_query($sql);
+
+	while($row=mysql_fetch_array($result){	
+		$key = array_search($row["provincia"],$puntos_en_provincia);
+		if($key==FALSE){
+			$puntos_en_provincia[][0] = $row["provincia"];
+			$puntos_en_provincia[][1] = $row["coste"];
+		}else{
+			$puntos_en_provincia[$key][0] = $row["provincia"];
+			$puntos_en_provincia[$key][1] = $puntos_en_provincia[$key][1]+$row["coste"];
+		}
+		
+		
+		$coste[$row["provincia"]] = $coste[$row["provincia"]]+$row["coste"];
+	}
+	foreach($puntos_en_provincia as $puntos){
+		if($puntos[1]>299){
+			$provincias_final[] = $puntos;
+		}
+	}
+	return $puntos;
+}
+//EN ESTAS DOS FUNCIONES HAY QUE COMPROBAR QUE EL MERGE FUNCIONA Y QUE PASAR SI DEVUELVE NULL
 function getProvinciasMaritimasJugador($jugador){ 
 	$provincias = Array();
 	$sql = "SELECT provincia from puntos_por_provincia where jugador = '".$jugador."' and provincia > 75 and puntos > 0";
@@ -424,7 +460,9 @@ function getProvinciasMaritimasJugador($jugador){
 		$provincias[]= $row["provincia"];
 	
 	}
-		return $provincias;
+		$prov_especiales = getPuntosEspecialesProvinciaJugador($jugador);
+		return array_unique(array_merge($provincias,$prov_especiales), SORT_REGULAR);
+		
 
 }
 function getProvinciasTerrestresJugador($jugador){
@@ -435,7 +473,8 @@ function getProvinciasTerrestresJugador($jugador){
 		$provincias[]= $row["id"];
 	
 	}
-		return $provincias;
+		$prov_especiales = getPuntosEspecialesProvinciaJugador($jugador);
+		return array_unique(array_merge($provincias,$prov_especiales), SORT_REGULAR);
 
 }
 function getCapitalesJugador($jugador){
