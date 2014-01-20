@@ -280,6 +280,10 @@ function crearPartisanos($provincia,$jugador){
 	mysql_query($sql);
 
 }
+/*
+ * 
+ * Los partisanos y campamentos los tenemos que dejar para post-batallas
+ * */
 function realizarMovTerrestres($id,$jugador){
 	$sql = "SELECT * from mov_terr_orden where id_orden ='".$id."'";
 	$result = mysql_query($sql);
